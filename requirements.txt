@@ -1,0 +1,6 @@
+selenium>=2.5
+sauceclient>=0.2.1
+pytest
+pytest-xdist
+requests
+logger
