@@ -7,26 +7,33 @@ echo location: $location
 echo projectid: $projectid
 
 # TODO: Update local code/test base
-# git -C /Users/elise/Repos/folder_name pull
+#git pull
+
+# This script prints out a space separated lists of scheduled runs (space separated automation contents)
+scheduledRuns=$(python3 getScheduledRuns.py "$projectid")
+
+#The output adds extra 's around the string, so let's strip them
+trimmedRuns=$(echo $scheduledRuns | tr -d "[='=]")
+
+pytest $trimmedRuns --location local --resultlog results.txt --junitxml=result.xml 
 
 
 # Execute tests locally
 if [ $location = 'local' ]
 then
-    pytest tests --location local --resultlog result.txt --junitxml=result.xml
+    pytest tests --location local --resultlog results.txt --junitxml=result.xml
 
 else # Execute tests against sauce labs
-    pytest tests --location sauce --resultlog result.txt --junitxml=result.xml
+    pytest tests --location sauce --resultlog results.txt --junitxml=result.xml
 fi
 
 # Send raw results to Pulse for parsing
-#Read in file
+# Read in file
 logs=$(<result.xml)
 logs=`echo $logs|tr '\n' ' '`
 logs=`echo $logs|tr '"' "'"`
 
-#echo "$logs"
-
+# TODO: Could be more clever about how we get the cycle id - maybe the parent suite or cycle? Depends on your setup
 request='{
     "test-cycle" : 1118427, 
     "result" : "'"$logs"'",

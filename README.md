@@ -41,5 +41,29 @@ The sauce labs access key can be found here: # TODO ADD GIF
 * Dump session ids for the SauceLabs CI plugins:
     ```$ cat $(find . -name "*.testlog")```
 
-### Slack Integration
-[Let's integrate the results with slack!](https://wiki.saucelabs.com/pages/viewpage.action?pageId=67011235)
+### Automation Host Integration
+There are two shell scripts that can be included with the automation host.
+
+##Run all tests
+This will run all the tests in your tests folder within your python project against the location specified (local or sauce)
+
+```shell.sh```
+
+Call with either within your shell agent
+```/Users/elise/Repos/saucelabs/saucelabs_python/shell.sh local $QTE.projectId```
+
+or
+
+```/Users/elise/Repos/saucelabs/saucelabs_python/shell.sh local $QTE.projectId```
+
+##Run specific tests
+This will use the automation content's to execute just the tests specified in the location specified (local or sauce)
+
+```specificshell.sh```
+
+Call with either within your shell agent
+```/Users/elise/Repos/saucelabs/saucelabs_python/shell.sh local $QTE.projectId```
+
+or
+
+```/Users/elise/Repos/saucelabs/saucelabs_python/shell.sh sauce $QTE.projectId```

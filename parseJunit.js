@@ -4,37 +4,47 @@ var testResults = payload.result;
 var projectId = payload.projectId;
 var cycleId = payload["test-cycle"];
 
+xml2js = require('xml2js');
+
 //////// Commandline version
 // var fs = require('fs');
-// xml2js = require('xml2js');
+// 
 // var projectId = 73292; // Demo - Sauce Labs Integration Project
 // var cycleId = 1118427; // Demo - Sauce Labs Integration Project
 /// TODO: Remove above
 
 var testLogs = [];
 function FormatLogs(tr) {
-    //emitEvent('SlackEvent', { FormattingJUnitLogs: testResults });
-    var testResults = JSON.parse(tr);
     
-    //console.log("JSON test case: " + testResults.testsuite);
+    var testResults = JSON.parse(tr);
+    //emitEvent('SlackEvent', { FormattingJUnitLogs: testResults });
        
     testResults.testsuite.testcase.forEach(function(tc) {
         var tcResult = tc["$"];
         var tcName = "";
 
         // Format the name
+        var note = "";
         if(!tcResult.name) 
             tcName = "Unnamed";
         else 
             tcName = tcResult.name.substring(0, tcResult.name.indexOf('['));
+            note = tcResult.name;
 
         TCStatus = "PASS";
         
-        var errmsg = "";
         if(tc.failure) {
             TCStatus = "FAIL";
-            errmsg = JSON.stringify(tc.failure);
+            if(note)
+                note = "\n" + JSON.stringify(tc.failure);
+            else
+                note = JSON.stringify(tc.failure);
         }
+
+        // The automation content is what we're going to use to run this later so it's important to get that format for Python pytest
+        //$file :: $classname (after the last .) :: $name (before the [)
+        var tcShortClassName = tcResult.classname.substring(tcResult.classname.lastIndexOf('.') + 1)
+        var auto = tcResult.file + "::" + tcShortClassName + "::" + tcName;
 
         var reportingLog = {
             exe_start_date: new Date(), // TODO this could use the time to complete to be more precise
@@ -43,8 +53,8 @@ function FormatLogs(tr) {
                 'JUnitTests'
             ],
             name: tcName,
-            automation_content: tcResult.classname + "::" + tcName,
-            note: errmsg
+            automation_content: auto,
+            note: note
         };
 
         // There are no steps here, so we'll add one step entry
@@ -71,22 +81,25 @@ function FormatLogs(tr) {
 
 }
 
+ // Pulse Version
 var parser = new xml2js.Parser();
-fs.readFile('results.xml', function(err, data) {
-    parser.parseString(data, function (err, result) {
-        var formattedResults = FormatLogs(JSON.stringify(result));
-
-        /// Command line version
-        // Write new file
-        // var payload = fs.writeFile('formattedResults.json', JSON.stringify(formattedResults, null, "  " ), 'utf8', function() {
-        //     console.log("File written: formattedResults.json");
-        // });
-    
-        // Pulse Version
-        // Emit next fxn to upload results/parse
-        emitEvent('UpdateQTestAndScenarioWithFormattedResultsEvent', formattedResults );
-    });
+parser.parseString(testResults, function (err, result) {
+    var formattedResults = FormatLogs(JSON.stringify(result));
+    emitEvent('UpdateQTestAndScenarioWithFormattedResultsEvent', formattedResults );
 });
+
+
+
+/// Command line version
+// fs.readFile('results.xml', function(err, data) {
+//     parser.parseString(data, function (err, result) {
+//         var formattedResults = FormatLogs(JSON.stringify(result));
+//         Write new file
+//         var payload = fs.writeFile('formattedResults.json', JSON.stringify(formattedResults, null, "  " ), 'utf8', function() {
+//             console.log("File written: formattedResults.json");
+//         });
+//     });
+// });
 
 
 
