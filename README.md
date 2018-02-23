@@ -44,7 +44,7 @@ The sauce labs access key can be found here: # TODO ADD GIF
 ### Automation Host Integration
 There are two shell scripts that can be included with the automation host.
 
-##Run all tests
+## Run all tests
 This will run all the tests in your tests folder within your python project against the location specified (local or sauce)
 
 ```shell.sh```
@@ -56,7 +56,7 @@ or
 
 ```/Users/elise/Repos/saucelabs/saucelabs_python/shell.sh local $QTE.projectId```
 
-##Run specific tests
+## Run specific tests
 This will use the automation content's to execute just the tests specified in the location specified (local or sauce)
 
 ```specificshell.sh```
