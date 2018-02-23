@@ -20,8 +20,8 @@ Set your selenium driver to run at `http://localhost:4444/wd/hub`
 
 ### Set up sauce labs
 Two environment variables are needed for access:
-```SAUCE_USERNAME=<your sauce labs username>
-SAUCE_ACCESS_KEY=<your sauce labs access key>```
+SAUCE_USERNAME=<your sauce labs username>
+SAUCE_ACCESS_KEY=<your sauce labs access key>
 
 The sauce labs access key can be found here: # TODO ADD GIF
 
